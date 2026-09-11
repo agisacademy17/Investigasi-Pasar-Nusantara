@@ -690,24 +690,17 @@
 
             return (
                 <div className="relative min-h-screen w-full flex flex-col justify-between items-center p-4 sm:p-8 fade-in select-none overflow-hidden bg-slate-950">
-                    {/* Lapisan Latar Belakang: Gambar utama tampil utuh (contain) dengan ambient blur pengisi layar */}
+                    {/* Lapisan Latar Belakang Layar Penuh dengan Posisi Atas Terkunci agar Judul Tidak Terpotong */}
                     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-                        {/* Latar pendaran ambient lembut pengisi area layar laptop/desktop lebar */}
                         <div 
-                            className="absolute inset-0 bg-cover bg-center filter blur-2xl scale-110 opacity-45 brightness-75 transition-all duration-1000"
+                            className="absolute inset-0 bg-cover bg-no-repeat transition-all duration-700"
                             style={{ 
-                                backgroundImage: `url('https://lh3.googleusercontent.com/d/1asrV1-GP3l0BHZzc4V4oTSGzKSkBD3On')`
+                                backgroundImage: `url('https://lh3.googleusercontent.com/d/1asrV1-GP3l0BHZzc4V4oTSGzKSkBD3On')`,
+                                backgroundPosition: 'center top'
                             }}
                         ></div>
-                        {/* Ilustrasi utama berformat contain agar tampak utuh 100% tanpa terpotong di layar manapun */}
-                        <div 
-                            className="absolute inset-0 bg-contain bg-center bg-no-repeat transition-all duration-500"
-                            style={{ 
-                                backgroundImage: `url('https://lh3.googleusercontent.com/d/1asrV1-GP3l0BHZzc4V4oTSGzKSkBD3On')`
-                            }}
-                        ></div>
-                        {/* Gradien pelindung kontras tombol navigasi */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/65 pointer-events-none"></div>
+                        {/* Gradien pelindung kontras untuk tombol navigasi bawah tanpa menggelapkan judul di atas */}
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/75 pointer-events-none"></div>
                     </div>
 
                     <div className="relative z-10 w-full flex justify-end items-center pt-2 px-2"></div>
