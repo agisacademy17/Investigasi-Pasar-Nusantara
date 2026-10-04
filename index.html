@@ -601,7 +601,7 @@
             const backInfo = getBackTarget(state.screen);
 
             return (
-                <div className="w-full flex justify-between items-center p-3 sm:p-4 z-30 sticky top-0 transition-all bg-transparent text-white">
+                <div className="w-full flex justify-between items-center p-3 sm:p-4 z-30 sticky top-0 transition-all bg-transparent text-gray-900 dark:text-white">
                     <div className="flex items-center gap-2.5 sm:gap-3">
                         <div className="flex items-center gap-2.5 font-bold text-base sm:text-lg">
                             <img 
@@ -613,7 +613,7 @@
                                     e.target.src = "https://drive.google.com/thumbnail?id=1Fy5qfdYcCxkgkum1fY424H4uBIIyIZgm&sz=w500";
                                 }}
                             />
-                            <span className="hidden sm:inline font-serif drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)]">{title || "Investigasi Pasar"}</span>
+                            <span className="hidden sm:inline font-serif text-gray-900 dark:text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)] dark:drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">{title || "Investigasi Pasar"}</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-2.5">
@@ -889,6 +889,9 @@
                         <video 
                             controls 
                             playsInline 
+                            onPlay={() => stopBgm()}
+                            onPause={() => playBgm()}
+                            onEnded={() => playBgm()}
                             className="w-full h-full object-contain bg-black"
                         >
                             <source src="https://github.com/agisacademy17/asetgiminvestigasipasarnusantara/raw/refs/heads/main/lv_0_20260904213306.mp4" type="video/mp4" />
@@ -898,7 +901,7 @@
 
                     <div className="mt-6 flex justify-end">
                         <button 
-                            onClick={() => { playAudioTone('click'); changeScreen('char'); }} 
+                            onClick={() => { playAudioTone('click'); playBgm(); changeScreen('char'); }} 
                             className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-8 rounded-2xl transition shadow-lg flex items-center gap-2 text-sm sm:text-base active:scale-95"
                         >
                             Siap Bertugas <i className="fas fa-chevron-right"></i>
@@ -1223,10 +1226,10 @@
 
             return (
                 <div className="flex flex-col items-center min-h-[85vh] p-4 fade-in font-sans overflow-hidden relative pb-10">
-                    <div className="w-full max-w-4xl flex justify-center items-center p-4 rounded-2xl shadow-md mb-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 z-30 relative text-center">
+                    <div className="w-full max-w-4xl flex justify-center items-center p-4 rounded-2xl shadow-md mb-6 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 z-30 relative text-center">
                         <div>
-                            <h2 className="text-xl font-bold font-serif">{region?.name || "Peta Investigasi"}</h2>
-                            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-extrabold uppercase tracking-widest flex items-center justify-center gap-1.5 mt-0.5">
+                            <h2 className="text-xl sm:text-2xl font-bold font-serif text-gray-900 dark:text-white tracking-wide">{region?.name || "Peta Investigasi"}</h2>
+                            <p className="text-xs sm:text-sm text-emerald-600 dark:text-emerald-400 font-extrabold uppercase tracking-widest flex items-center justify-center gap-1.5 mt-0.5">
                                 <i className="fas fa-route"></i> Rute Investigasi Pasar
                             </p>
                         </div>
@@ -2199,6 +2202,8 @@
             const [feedback, setFeedback] = useState("");
             const [isSuccess, setIsSuccess] = useState(false);
             const [showWrong, setShowWrong] = useState(false);
+            const [showVideoModal, setShowVideoModal] = useState(false);
+            const [videoEnded, setVideoEnded] = useState(false);
 
             useEffect(() => {
                 const b = (Math.floor(Math.random() * 5) + 2) * 10;
@@ -2293,7 +2298,7 @@
                             <label className="block text-xs sm:text-sm font-bold opacity-80 mb-1">1. Tulis Model Persamaannya</label>
                             <input 
                                 type="text" value={eqInput} onChange={e => setEqInput(e.target.value)}
-                                placeholder={`Contoh: x + (x + ${prob.b}) = ${prob.c}`}
+                                placeholder="Tuliskan persamaan aljabar di sini..."
                                 className="w-full p-4 rounded-2xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:border-emerald-500 font-mono text-sm sm:text-base shadow-inner"
                             />
                             <p className="text-xs opacity-60 mt-1 pl-1">Gunakan huruf 'x' kecil tanpa spasi berlebih.</p>
@@ -2303,7 +2308,7 @@
                             <input 
                                 type="number" value={ansInput} onChange={e => setAnsInput(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && checkFinal()}
-                                placeholder="Umur gedung (tahun)"
+                                placeholder="Masukkan nilai x..."
                                 className="w-full p-4 rounded-2xl border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 outline-none focus:border-emerald-500 font-bold text-sm sm:text-base shadow-inner"
                             />
                         </div>
@@ -2319,14 +2324,55 @@
                         </button>
                     </div>
 
-                    {isSuccess && (
+                    {isSuccess && !showVideoModal && (
                         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 fade-in p-4 text-center">
                             <div className="bg-white dark:bg-gray-800 p-8 sm:p-10 rounded-3xl max-w-md w-full border border-emerald-500/30">
                                 <i className="fas fa-check-circle text-6xl text-emerald-500 mb-4 bounce-slight"></i>
                                 <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">Kasus Selesai!</h2>
                                 <p className="opacity-80 mb-8 text-sm text-gray-600 dark:text-gray-300">Sindikat berhasil dibongkar dan harga pasar kembali normal berkat perhitungan aljabarmu yang presisi, Detektif.</p>
-                                <button onClick={() => { playAudioTone('click'); completeLevel(5); }} className="bg-emerald-600 hover:bg-emerald-700 w-full py-4 rounded-2xl text-white font-bold transition shadow-lg active:scale-95">
+                                <button onClick={() => { playAudioTone('click'); setShowVideoModal(true); }} className="bg-emerald-600 hover:bg-emerald-700 w-full py-4 rounded-2xl text-white font-bold transition shadow-lg active:scale-95">
                                     Lihat Laporan Akhir
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {showVideoModal && (
+                        <div className="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 fade-in p-4 text-center">
+                            <div className="bg-white dark:bg-gray-900 p-5 sm:p-7 rounded-3xl max-w-2xl w-full border-2 border-emerald-500/40 shadow-2xl flex flex-col items-center">
+                                <div className="inline-flex items-center gap-2 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2.5 border border-emerald-300 dark:border-emerald-800">
+                                    <i className="fas fa-video"></i> Pesan Kepala Detektif
+                                </div>
+                                <h3 className="text-xl sm:text-2xl font-serif font-bold mb-3 text-gray-900 dark:text-white">
+                                    Evaluasi Akhir Misi Penyelidikan
+                                </h3>
+                                <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-xl border-2 border-emerald-500/30 dark:border-gray-700 bg-black mb-5">
+                                    <video 
+                                        controls 
+                                        autoPlay
+                                        playsInline 
+                                        onPlay={() => stopBgm()}
+                                        onPause={() => playBgm()}
+                                        onEnded={() => {
+                                            setVideoEnded(true);
+                                            playBgm();
+                                        }}
+                                        className="w-full h-full object-contain bg-black"
+                                    >
+                                        <source src="https://github.com/agisacademy17/asetgiminvestigasipasarnusantara/raw/refs/heads/main/Kepala_detektif_berbicara_kepada%E2%80%A6_1080p_20260913080418.mp4" type="video/mp4" />
+                                        Peramban Anda tidak mendukung pemutar video HTML5.
+                                    </video>
+                                </div>
+                                <button 
+                                    onClick={() => { playAudioTone('click'); playBgm(); completeLevel(5); }} 
+                                    className={`w-full py-3.5 px-6 rounded-2xl text-white font-bold transition shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base active:scale-95 ${
+                                        videoEnded 
+                                            ? 'bg-emerald-600 hover:bg-emerald-700 ring-4 ring-emerald-300 dark:ring-emerald-700 animate-pulse' 
+                                            : 'bg-emerald-600 hover:bg-emerald-700'
+                                    }`}
+                                >
+                                    <span>{videoEnded ? "Selesai (Menuju Halaman Laporan)" : "Selesai & Buka Halaman Laporan"}</span>
+                                    <i className="fas fa-arrow-right"></i>
                                 </button>
                             </div>
                         </div>
